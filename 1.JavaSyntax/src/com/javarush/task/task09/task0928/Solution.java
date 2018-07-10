@@ -17,10 +17,9 @@ public class Solution {
         OutputStream fileOutputStream = getOutputStream(destinationFileName);
 
         int count = 0;
-        while (fileInputStream.available() > 0) ;
+        while (fileInputStream.available() > 0)
         {
             int data = fileInputStream.read();
-            System.out.println(data);
             fileOutputStream.write(data);
             count++;
         }
