@@ -39,9 +39,10 @@ public class Solution {
         ReadFileInterface f = new ReadFileThread();
         f.setFileName(fileName);
         f.start();
+
         //add your code here - добавьте код тут
-        System.out.println(f.getFileContent());
         f.join();
+        System.out.println(f.getFileContent());
     }
 
     public interface ReadFileInterface {
@@ -57,8 +58,8 @@ public class Solution {
 
     //add your code here - добавьте код тут
     public static class ReadFileThread extends Thread implements ReadFileInterface {
-        private static String fileName;
-        private static String fileContent;
+        private String fileName;
+        private String fileContent = "";
 
         @Override
         public void setFileName(String fullFileName) {
