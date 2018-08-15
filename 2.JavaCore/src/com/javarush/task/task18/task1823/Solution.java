@@ -12,7 +12,7 @@ import java.util.Map;
 public class Solution {
     public static Map<String, Integer> resultMap = new HashMap<String, Integer>();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String filename;
         ArrayList<ReadThread> readThreads = new ArrayList<>();
@@ -24,8 +24,9 @@ public class Solution {
 
         for (int i = 0; i < readThreads.size(); i++) {
             readThreads.get(i).start();
+            readThreads.get(i).join();
         }
-        System.out.println();
+//        System.out.println(resultMap);
     }
 
     public static class ReadThread extends Thread {
@@ -45,13 +46,18 @@ public class Solution {
                 FileInputStream fileInputStream = new FileInputStream(filename);
 
                 while ((currentByte = fileInputStream.read()) != -1) {
+                    boolean isAdded = false;
                     if (!fileBytes.isEmpty()) {
                         for(Map.Entry<Integer, Integer> pair: fileBytes.entrySet()) {
                             kolOfCurrentByte = pair.getValue();
                             if (pair.getKey() == currentByte) {
                                 pair.setValue(kolOfCurrentByte + 1);
+                                isAdded = true;
                                 break;
                             }
+                        }
+                        if (!isAdded) {
+                            fileBytes.put(currentByte, 1);
                         }
                     } else fileBytes.put(currentByte, 1);
                 }
@@ -77,6 +83,7 @@ public class Solution {
             }
 
             resultMap.put(filename, maxByte);
+//            System.out.println();
         }
     }
 }
