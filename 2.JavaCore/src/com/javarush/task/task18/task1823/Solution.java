@@ -1,89 +1,53 @@
 package com.javarush.task.task18.task1823;
 
-import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-/* 
+import java.io.*;
+/*
 Нити и байты
 */
 
 public class Solution {
     public static Map<String, Integer> resultMap = new HashMap<String, Integer>();
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String filename;
-        ArrayList<ReadThread> readThreads = new ArrayList<>();
-
-        while (!(filename = reader.readLine()).equals("exit")) {
-            readThreads.add(new ReadThread(filename));
+    public static void main(String[] args) throws Exception{
+        BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+        String s;
+        while (!(s=buf.readLine()).equals("exit")){
+            new ReadThread(s).start();
         }
-        reader.close();
-
-        for (int i = 0; i < readThreads.size(); i++) {
-            readThreads.get(i).start();
-            readThreads.get(i).join();
-        }
-//        System.out.println(resultMap);
+//        System.out.println();
     }
 
     public static class ReadThread extends Thread {
-        private String filename;
-        private HashMap<Integer, Integer> fileBytes = new HashMap<>(); //<Byte, количество вхождений>
-        private int currentByte;
-        private int kolOfCurrentByte;
-
+        String fileName;
         public ReadThread(String fileName) {
-            this.filename = fileName;
+            //implement constructor body
+            this.fileName=fileName;
         }
-
-        @Override
-        public void run() {
-
-            try {
-                FileInputStream fileInputStream = new FileInputStream(filename);
-
-                while ((currentByte = fileInputStream.read()) != -1) {
-                    boolean isAdded = false;
-                    if (!fileBytes.isEmpty()) {
-                        for(Map.Entry<Integer, Integer> pair: fileBytes.entrySet()) {
-                            kolOfCurrentByte = pair.getValue();
-                            if (pair.getKey() == currentByte) {
-                                pair.setValue(kolOfCurrentByte + 1);
-                                isAdded = true;
-                                break;
-                            }
-                        }
-                        if (!isAdded) {
-                            fileBytes.put(currentByte, 1);
-                        }
-                    } else fileBytes.put(currentByte, 1);
+        // implement file reading here - реализуйте чтение из файла тут
+        public void run(){
+            try{
+                FileInputStream inp = new FileInputStream(fileName);
+                int[] mas = new int[256];
+                for (int x: mas){
+                    x=0;
                 }
-
-                fileInputStream.close();
-                getMaxByte();
-                Thread.currentThread().interrupt();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void getMaxByte() {
-            int maxByte = 0;
-            int maxValue = 0;
-
-            for (Map.Entry<Integer, Integer> pair: fileBytes.entrySet()) {
-                if (pair.getValue() > maxValue) {
-                    maxValue = pair.getValue();
-                    maxByte = pair.getKey();
+                while (inp.available() > 0){
+                    int d = inp.read();
+                    mas[d]+=1;
                 }
-            }
-
-            resultMap.put(filename, maxByte);
-//            System.out.println();
+                int max=0;
+                for (int x: mas){
+                    if (x>max) max=x;
+                }
+                int i=0;
+                for (i=0;i!=mas.length;i++){
+                    if (mas[i]==max) break;
+                }
+                resultMap.put(fileName,i);
+                inp.close();
+            } catch(Exception e){}
         }
     }
 }
